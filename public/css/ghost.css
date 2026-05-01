@@ -195,9 +195,11 @@ img, video { max-width: 100%; height: auto; display: block; }
 .main-content {
   flex: 1;
   width: 100%;
+  min-width: 0;
   margin: 0;
   padding: 30px 28px 40px;
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 /* ===== Hero (featured post) ===== */
@@ -655,13 +657,24 @@ img, video { max-width: 100%; height: auto; display: block; }
 /* ===== Single post with sidebar ===== */
 .single-layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 24px;
   align-items: start;
+}
+.single-layout .article {
+  max-width: 100%;
+  min-width: 0;
+}
+.single-layout .article-body,
+.single-layout .article-header,
+.single-layout .feature-image,
+.single-layout .article-footer {
+  max-width: 100%;
 }
 .single-sidebar {
   position: sticky;
-  top: 90px;
+  top: 24px;
+  min-width: 0;
 }
 .follow-us .follow-item {
   display: flex;
@@ -710,9 +723,18 @@ img, video { max-width: 100%; height: auto; display: block; }
 }
 .static-card h3 { margin-bottom: 10px; }
 
-@media (max-width: 980px) {
-  .single-layout { grid-template-columns: 1fr; }
-  .single-sidebar { position: static; }
+@media (max-width: 1100px) {
+  .single-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .single-sidebar {
+    position: static;
+    width: 100%;
+  }
+  .single-sidebar .sidebar-card {
+    margin-bottom: 12px;
+  }
 }
 @media (max-width: 780px) {
   .static-grid { grid-template-columns: 1fr; }
