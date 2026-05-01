@@ -1,0 +1,180 @@
+<%- include('_header') %>
+
+<div class="single-layout">
+  <article class="article">
+    <header class="article-header">
+    <% if (tags.length > 0) { %>
+      <div class="eyebrow">
+        <% tags.slice(0, 3).forEach((t, i) => { %>
+          <a href="/tag/<%= t.slug %>" style="color:inherit"><%= t.name %></a><% if (i < Math.min(tags.length, 3) - 1) { %> · <% } %>
+        <% }) %>
+      </div>
+    <% } %>
+      <h1><%= post.title %></h1>
+      <% if (post.excerpt) { %>
+        <p class="lead"><%= post.excerpt %></p>
+      <% } %>
+      <div class="post-meta" style="justify-content:center">
+      <% if (post.author_name) { %>
+        <span>By <strong><%= post.author_name %></strong></span>
+        <span>·</span>
+      <% } %>
+      <time datetime="<%= post.isoDate %>"><%= post.formattedDate %></time>
+      <span>·</span>
+      <span><%= post.readTime %> min read</span>
+      <% if (post.status !== 'published') { %>
+        <span>·</span>
+        <span style="color:var(--accent); font-weight:700; text-transform:uppercase"><%= post.status %></span>
+      <% } %>
+      </div>
+    </header>
+
+    <% if (post.feature_image) { %>
+      <figure class="feature-image">
+        <img src="<%= post.feature_image %>" alt="<%= post.title %>">
+      </figure>
+    <% } %>
+
+    <% const rawVideo = (post.video_url || '').trim(); %>
+    <% const metaVideo = (() => { const m = String(post.meta_description || '').match(/video_url:([^\s]+)/); return m ? m[1] : ''; })(); %>
+    <% const videoUrl = rawVideo || metaVideo; %>
+    <% const isHls = videoUrl && /\.m3u8(\?|$)/i.test(videoUrl); %>
+    <% const isMp4 = videoUrl && /\.(mp4|webm|ogg)(\?|$)/i.test(videoUrl); %>
+
+    <% if (videoUrl && (isHls || isMp4)) { %>
+      <section class="video-block">
+        <h3>Video Player</h3>
+        <% if (isMp4) { %>
+          <video controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;">
+            <source src="<%= videoUrl %>" type="video/mp4">
+            Browser kamu tidak mendukung video tag.
+          </video>
+        <% } else { %>
+          <video id="hls-player" controls playsinline preload="metadata" style="width:100%;border-radius:12px;background:#000;"></video>
+          <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+          <script>
+            (function(){
+              const src = "<%= videoUrl %>";
+              const video = document.getElementById('hls-player');
+              if (!video || !src) return;
+              if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = src;
+              } else if (window.Hls && window.Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(src);
+                hls.attachMedia(video);
+              } else {
+                const p = document.createElement('p');
+                p.textContent = 'Browser tidak mendukung HLS player.';
+                p.style.color = '#ef4444';
+                video.replaceWith(p);
+              }
+            })();
+          </script>
+        <% } %>
+      </section>
+    <% } %>
+
+    <div class="article-body">
+      <%- html %>
+    </div>
+  </article>
+
+  <aside class="single-sidebar">
+    <% if (sidebarRecent && sidebarRecent.length) { %>
+      <div class="sidebar-card">
+        <h3>Related Articles</h3>
+        <div class="mini-list">
+          <% sidebarRecent.forEach(r => { %>
+            <a class="mini-item" href="/post/<%= r.slug %>">
+              <img src="<%= r.feature_image %>" alt="<%= r.title %>">
+              <div>
+                <div class="mini-title"><%= r.title %></div>
+                <small><%= r.formattedDate %></small>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (sidebarCategories && sidebarCategories.length) { %>
+      <div class="sidebar-card">
+        <h3>Categories</h3>
+        <ul class="cat-list">
+          <% sidebarCategories.forEach(c => { %>
+            <li><span><%= c.category %></span><b><%= c.count %></b></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <% if (sidebarTags && sidebarTags.length) { %>
+      <div class="sidebar-card">
+        <h3>Popular Tags</h3>
+        <div class="tag-cloud compact">
+          <% sidebarTags.forEach(t => { %>
+            <a class="tag-chip" href="/tag/<%= t.slug %>">#<%= t.name %></a>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="sidebar-card follow-us">
+      <h3>Follow Us</h3>
+      <a href="#" class="follow-item"><span>Facebook</span><i>→</i></a>
+      <a href="#" class="follow-item"><span>Twitter / X</span><i>→</i></a>
+      <a href="#" class="follow-item"><span>Instagram</span><i>→</i></a>
+      <a href="#" class="follow-item"><span>Mastodon</span><i>→</i></a>
+      <a href="#" class="follow-item"><span>Discord</span><i>→</i></a>
+    </div>
+  </aside>
+</div>
+
+<footer class="article-footer">
+  <% if (tags.length > 0) { %>
+    <div class="article-tags">
+      <% tags.forEach(t => { %>
+        <a class="tag-chip" href="/tag/<%= t.slug %>">#<%= t.name %></a>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <% if (post.author_name) { %>
+    <div class="author-card">
+      <div class="avatar">
+        <% if (post.author_avatar) { %>
+          <img src="<%= post.author_avatar %>" alt="<%= post.author_name %>" style="width:100%;height:100%;border-radius:50%;object-fit:cover">
+        <% } else { %>
+          <%= post.author_name.charAt(0).toUpperCase() %>
+        <% } %>
+      </div>
+      <div>
+        <div class="name"><%= post.author_name %></div>
+        <% if (post.author_bio) { %>
+          <div class="bio"><%= post.author_bio %></div>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+</footer>
+
+<% if (related && related.length) { %>
+  <section class="related">
+    <h3>Continue reading</h3>
+    <div class="post-grid">
+      <% related.forEach(r => { %>
+        <article class="post-card">
+          <a href="/post/<%= r.slug %>" class="thumb">
+            <img src="<%= r.feature_image %>" alt="<%= r.title %>" loading="lazy">
+          </a>
+          <h3><a href="/post/<%= r.slug %>"><%= r.title %></a></h3>
+          <% if (r.excerpt) { %><p class="excerpt"><%= r.excerpt %></p><% } %>
+          <div class="post-meta"><span><%= r.formattedDate %></span></div>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+<% } %>
+
+<%- include('_footer') %>

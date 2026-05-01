@@ -1,0 +1,82 @@
+<%- include('_header') %>
+
+<% if (featured) { %>
+  <section class="hero">
+    <a href="/post/<%= featured.slug %>" class="hero-image">
+      <img src="<%= featured.feature_image %>" alt="<%= featured.title %>" loading="lazy">
+    </a>
+    <div class="hero-content">
+      <div class="eyebrow">⭐ Featured</div>
+      <h2><a href="/post/<%= featured.slug %>"><%= featured.title %></a></h2>
+      <p class="excerpt"><%= featured.excerpt %></p>
+      <div class="post-meta">
+        <span><%= featured.formattedDate %></span>
+        <span>·</span>
+        <span><%= featured.readTime %> min read</span>
+      </div>
+    </div>
+  </section>
+<% } %>
+
+<% if (searchQuery) { %>
+  <h2 class="section-title">Hasil pencarian untuk "<%= searchQuery %>"</h2>
+<% } else if (!featured) { %>
+  <h2 class="section-title">Latest posts</h2>
+<% } else { %>
+  <h2 class="section-title">More posts</h2>
+<% } %>
+
+<% if (posts.length === 0) { %>
+  <div class="empty">
+    <h2>Belum ada tulisan.</h2>
+    <p>Stay tuned — tulisan pertama akan segera hadir!</p>
+    <% if (currentUser) { %>
+      <p style="margin-top:20px"><a class="admin-link" href="/admin/posts/new">✍️ Tulis post pertama</a></p>
+    <% } %>
+  </div>
+<% } else { %>
+  <div class="post-grid post-grid-4">
+    <% posts.forEach(p => { %>
+      <article class="post-card elevated">
+        <a href="/post/<%= p.slug %>" class="thumb">
+          <img src="<%= p.feature_image %>" alt="<%= p.title %>" loading="lazy">
+        </a>
+        <h3><a href="/post/<%= p.slug %>"><%= p.title %></a></h3>
+        <p class="excerpt"><%= p.excerpt %></p>
+        <div class="post-meta">
+          <span><%= p.formattedDate %></span>
+          <span>·</span>
+          <span><%= p.readTime %> min</span>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (totalPages > 1) { %>
+  <nav class="pagination" aria-label="Pagination">
+    <% if (page > 1) { %>
+      <a href="?<%= searchQuery ? 'q=' + encodeURIComponent(searchQuery) + '&' : '' %>page=<%= page - 1 %>">← Prev</a>
+    <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <% if (i === page) { %>
+        <span class="active"><%= i %></span>
+      <% } else { %>
+        <a href="?<%= searchQuery ? 'q=' + encodeURIComponent(searchQuery) + '&' : '' %>page=<%= i %>"><%= i %></a>
+      <% } %>
+    <% } %>
+    <% if (page < totalPages) { %>
+      <a href="?<%= searchQuery ? 'q=' + encodeURIComponent(searchQuery) + '&' : '' %>page=<%= page + 1 %>">Next →</a>
+    <% } %>
+  </nav>
+<% } %>
+
+<% if (tags && tags.length) { %>
+  <section class="tag-cloud" aria-label="Popular tags">
+    <% tags.forEach(t => { %>
+      <a class="tag-chip" href="/tag/<%= t.slug %>">#<%= t.name %> <span style="opacity:.6;margin-left:4px;"><%= t.count %></span></a>
+    <% }) %>
+  </section>
+<% } %>
+
+<%- include('_footer') %>

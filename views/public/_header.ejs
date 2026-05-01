@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="<%= theme %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle : site.site_title %></title>
+<meta name="description" content="<%= typeof pageDescription !== 'undefined' ? (pageDescription || '') : (site.site_description || '') %>">
+<% if (typeof canonicalUrl !== 'undefined') { %><link rel="canonical" href="<%= canonicalUrl %>"><% } %>
+<link rel="alternate" type="application/rss+xml" title="<%= site.site_title %> RSS" href="/rss.xml">
+<link rel="stylesheet" href="/css/ghost.css">
+<style>:root { --accent: <%= accentColor %>; }</style>
+
+<meta property="og:title" content="<%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle : site.site_title %>">
+<meta property="og:description" content="<%= typeof pageDescription !== 'undefined' ? (pageDescription || '') : (site.site_description || '') %>">
+<meta property="og:type" content="<%= typeof post !== 'undefined' && post ? 'article' : 'website' %>">
+<meta property="og:url" content="<%= typeof canonicalUrl !== 'undefined' ? canonicalUrl : siteUrl %>">
+<% if (typeof post !== 'undefined' && post && post.feature_image) { %>
+<meta property="og:image" content="<%= post.feature_image %>">
+<% } %>
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a href="/" class="site-title"><%= site.site_title %></a>
+
+    <form class="search-form" action="/" method="get">
+      <input type="search" name="q" placeholder="Search..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+    </form>
+
+    <nav class="site-nav">
+      <a href="/">Home</a>
+      <a href="/about">About Us</a>
+      <a href="/lainnya">Lainnya</a>
+      <a href="/rss.xml">RSS</a>
+      <% if (currentUser) { %>
+        <a href="/admin" class="admin-link">Admin</a>
+      <% } else { %>
+        <a href="/admin/login" class="admin-link">Login</a>
+      <% } %>
+      <button id="theme-toggle" class="btn-icon" title="Toggle theme" aria-label="Toggle theme">
+        <%= theme === 'dark' ? '☀' : '☾' %>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>

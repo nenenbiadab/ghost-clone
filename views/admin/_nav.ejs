@@ -1,0 +1,11 @@
+<nav class="admin-nav">
+  <div class="brand"><a href="/admin">⚡ <%= site.site_title %></a></div>
+  <div class="nav-links">
+    <a href="/admin" class="<%= typeof navActive !== 'undefined' && navActive === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+    <a href="/admin/posts" class="<%= typeof navActive !== 'undefined' && navActive === 'posts' ? 'active' : '' %>">Posts</a>
+    <a href="/admin/posts/new" class="<%= typeof navActive !== 'undefined' && navActive === 'new' ? 'active' : '' %>">+ New</a>
+    <a href="/admin/app-passwords" class="<%= typeof navActive !== 'undefined' && navActive === 'app-passwords' ? 'active' : '' %>">App Passwords</a>
+    <a href="/" target="_blank" rel="noopener">View site ↗</a>
+    <a href="/admin/logout" class="logout">Logout</a>
+  </div>
+</nav>

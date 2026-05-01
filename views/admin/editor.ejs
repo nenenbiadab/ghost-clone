@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= post ? 'Edit' : 'New' %> Post — <%= site.site_title %></title>
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<% const navActive = post ? 'posts' : 'new'; %>
+<%- include('_nav') %>
+
+<div class="container">
+  <form action="<%= post ? '/admin/posts/' + post.id + '/edit' : '/admin/posts/new' %>" method="POST" data-post-id="<%= post ? post.id : 'new' %>">
+
+    <div class="page-header">
+      <h1><%= post ? 'Edit Post' : 'New Post' %></h1>
+      <div style="display:flex;gap:8px">
+        <a href="/admin/posts" class="btn btn-ghost">Cancel</a>
+        <% if (post && post.status === 'published') { %>
+          <a href="/post/<%= post.slug %>" target="_blank" class="btn btn-ghost">View ↗</a>
+        <% } %>
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </div>
+
+    <div class="editor-layout">
+      <div class="editor-main">
+        <input type="text" name="title" class="editor-title" placeholder="Post title" required
+               value="<%= post ? post.title : '' %>">
+
+        <div class="toolbar">
+          <button type="button" data-md="bold" title="Bold (Ctrl+B)"><strong>B</strong></button>
+          <button type="button" data-md="italic" title="Italic (Ctrl+I)"><em>I</em></button>
+          <button type="button" data-md="h2" title="Heading 2">H2</button>
+          <button type="button" data-md="h3" title="Heading 3">H3</button>
+          <button type="button" data-md="link" title="Link">🔗</button>
+          <button type="button" data-md="image" title="Image">🖼</button>
+          <button type="button" data-md="code" title="Code">{ }</button>
+          <button type="button" data-md="quote" title="Quote">❝</button>
+          <button type="button" data-md="ul" title="List">≡</button>
+          <span class="text-small text-muted" id="save-status" style="margin-left:auto;align-self:center"></span>
+        </div>
+
+        <textarea name="markdown" id="markdown-editor" class="editor-textarea" placeholder="Start writing in Markdown..."><%= post ? post.markdown : '' %></textarea>
+      </div>
+
+      <aside class="editor-sidebar">
+        <div class="card">
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+              <option value="draft" <%= (!post || post.status === 'draft') ? 'selected' : '' %>>Draft</option>
+              <option value="published" <%= (post && post.status === 'published') ? 'selected' : '' %>>Published</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Visibility</label>
+            <select name="visibility">
+              <option value="public" <%= (!post || post.visibility === 'public') ? 'selected' : '' %>>Public</option>
+              <option value="private" <%= (post && post.visibility === 'private') ? 'selected' : '' %>>Private</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-row">
+              <input type="checkbox" name="featured" value="1" <%= (post && post.featured) ? 'checked' : '' %>>
+              <span>⭐ Featured post</span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>Feature Image URL</label>
+            <input id="feature-image-url" type="url" name="feature_image" placeholder="https://..."
+                   value="<%= post && post.feature_image ? post.feature_image : '' %>">
+            <p class="help-text">Bisa pakai URL remote atau upload file di bawah.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Upload Feature Image (opsional)</label>
+            <input id="feature-image-file" type="file" accept="image/*">
+            <button type="button" id="upload-feature-btn" class="btn btn-ghost" style="margin-top:8px">Upload Gambar</button>
+            <p class="help-text">Max 2MB. Setelah upload, URL akan otomatis terisi.</p>
+            <div id="feature-image-preview" style="margin-top:10px;">
+              <% if (post && post.feature_image) { %>
+                <img src="<%= post.feature_image %>" alt="preview" style="max-width:100%;border-radius:8px;border:1px solid var(--border)">
+              <% } %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tags</label>
+            <input type="text" name="tags" placeholder="tech, javascript" value="<%= tagsString %>">
+            <p class="help-text">Pisahkan dengan koma.</p>
+          </div>
+
+          <div class="form-group">
+            <label>Excerpt</label>
+            <textarea name="excerpt" rows="3" placeholder="Custom excerpt"><%= post && post.excerpt ? post.excerpt : '' %></textarea>
+            <p class="help-text">Auto-generate kalau kosong.</p>
+          </div>
+
+          <details>
+            <summary style="cursor:pointer;font-weight:600;margin-bottom:10px">SEO</summary>
+            <div class="form-group">
+              <label>Meta title</label>
+              <input type="text" name="meta_title" value="<%= post && post.meta_title ? post.meta_title : '' %>">
+            </div>
+            <div class="form-group">
+              <label>Meta description</label>
+              <textarea name="meta_description" rows="2"><%= post && post.meta_description ? post.meta_description : '' %></textarea>
+            </div>
+          </details>
+
+          <% if (post) { %>
+            <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+            <p class="text-small text-muted">
+              Views: <%= post.views || 0 %><br>
+              Slug: <code><%= post.slug %></code>
+            </p>
+          <% } %>
+        </div>
+      </aside>
+    </div>
+  </form>
+</div>
+
+<script src="/js/editor.js"></script>
+<script>
+(() => {
+  const fileInput = document.getElementById('feature-image-file');
+  const uploadBtn = document.getElementById('upload-feature-btn');
+  const urlInput = document.getElementById('feature-image-url');
+  const preview = document.getElementById('feature-image-preview');
+
+  if (!fileInput || !uploadBtn || !urlInput) return;
+
+  uploadBtn.addEventListener('click', async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      alert('Pilih file gambar dulu.');
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append('feature_image_file', file);
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Uploading...';
+
+    try {
+      const res = await fetch('/admin/upload-feature-image', {
+        method: 'POST',
+        body: fd
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok || !data.url) {
+        throw new Error(data.error || 'Upload gagal');
+      }
+
+      urlInput.value = data.url;
+      preview.innerHTML = '<img src="' + data.url + '" alt="preview" style="max-width:100%;border-radius:8px;border:1px solid var(--border)">';
+      fileInput.value = '';
+    } catch (e) {
+      alert('Upload gagal: ' + e.message);
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = 'Upload Gambar';
+    }
+  });
+})();
+</script>
+</body>
+</html>

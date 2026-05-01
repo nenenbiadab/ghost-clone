@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Posts — <%= site.site_title %></title>
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<% const navActive = 'posts'; %>
+<%- include('_nav') %>
+
+<div class="container">
+  <div class="page-header">
+    <h1>Posts</h1>
+    <a href="/admin/posts/new" class="btn btn-primary">+ New Post</a>
+  </div>
+
+  <div class="filters">
+    <a href="/admin/posts" class="<%= currentStatus === 'all' ? 'active' : '' %>">All</a>
+    <a href="/admin/posts?status=published" class="<%= currentStatus === 'published' ? 'active' : '' %>">Published</a>
+    <a href="/admin/posts?status=draft" class="<%= currentStatus === 'draft' ? 'active' : '' %>">Drafts</a>
+  </div>
+
+  <% if (posts.length === 0) { %>
+    <div class="card" style="text-align:center;padding:60px 20px">
+      <h2>Belum ada post.</h2>
+      <p class="text-muted">Mulai tulis post pertamamu.</p>
+      <p style="margin-top:20px"><a href="/admin/posts/new" class="btn btn-primary">✍️ Write your first post</a></p>
+    </div>
+  <% } else { %>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Views</th>
+            <th>Updated</th>
+            <th style="width:220px;text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% posts.forEach(p => { %>
+            <tr>
+              <td>
+                <a href="/admin/posts/<%= p.id %>/edit" class="table-row-title"><%= p.title %></a>
+                <% if (p.featured) { %>
+                  <span style="color:var(--accent);margin-left:6px" title="Featured">★</span>
+                <% } %>
+                <div class="text-small text-muted">/post/<%= p.slug %></div>
+              </td>
+              <td><span class="badge <%= p.status %>"><%= p.status %></span></td>
+              <td><%= p.views || 0 %></td>
+              <td class="text-small text-muted"><%= helpers.formatDate(p.updated_at) %></td>
+              <td style="text-align:right;white-space:nowrap">
+                <% if (p.status === 'published') { %>
+                  <a href="/post/<%= p.slug %>" target="_blank" class="btn btn-ghost btn-sm">View</a>
+                <% } %>
+                <a href="/admin/posts/<%= p.id %>/edit" class="btn btn-ghost btn-sm">Edit</a>
+                <form action="/admin/posts/<%= p.id %>/delete" method="POST" style="display:inline" onsubmit="return confirm('Hapus post ini? Tidak bisa dibatalkan.')">
+                  <button type="submit" class="btn btn-danger btn-sm">Del</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+</body>
+</html>

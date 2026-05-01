@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Setup Admin — <%= site.site_title %></title>
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-box">
+    <h1>🚀 Setup Admin</h1>
+    <p class="subtitle">Buat akun admin pertama untuk <strong><%= site.site_title %></strong></p>
+
+    <% if (locked) { %>
+      <div class="alert error">🔒 <%= error %></div>
+      <p class="text-small text-muted">
+        Kalau kamu butuh reset, hapus user di database atau set <code>DISABLE_SETUP=false</code> di env.
+      </p>
+      <p class="auth-footer"><a href="/admin/login">→ Go to Login</a></p>
+    <% } else { %>
+
+      <% if (typeof dbStatus !== 'undefined' && dbStatus && !dbStatus.ok) { %>
+        <div class="alert error">
+          <strong>⚠️ Koneksi database gagal:</strong><br>
+          <code><%= dbStatus.code || '' %></code> — <%= dbStatus.msg %><br>
+          <small>Cek env <code>DB_HOST</code>, <code>DB_USER</code>, <code>DB_PASSWORD</code>, <code>DB_NAME</code> di Hostinger.</small>
+        </div>
+      <% } else if (typeof dbStatus !== 'undefined' && dbStatus && dbStatus.ok) { %>
+        <div class="diag-box">✓ Database connected</div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="alert error"><%= error %></div>
+      <% } %>
+
+      <form action="/setup" method="POST">
+        <div class="form-group">
+          <label>Nama</label>
+          <input type="text" name="name" value="<%= values.name || '' %>" required autofocus>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" value="<%= values.email || '' %>" required>
+        </div>
+        <div class="form-group">
+          <label>Password (minimal 8 karakter)</label>
+          <input type="password" name="password" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label>Konfirmasi Password</label>
+          <input type="password" name="password_confirm" required minlength="8">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Admin Account →</button>
+      </form>
+
+      <p class="auth-footer mt-4">
+        <small>Setup route otomatis dinonaktifkan setelah akun pertama dibuat.</small>
+      </p>
+    <% } %>
+  </div>
+</div>
+
+<div style="text-align:center; margin-top:20px; font-size:0.85rem; color:#888">
+  <a href="/healthz" target="_blank" style="color:#888">Check /healthz</a>
+</div>
+</body>
+</html>

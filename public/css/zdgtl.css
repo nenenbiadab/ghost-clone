@@ -1,0 +1,11 @@
+/* ZDGTL Modern Theme - Purple Card Layout */
+:root {
+  --purple-500: #8b5cf6;
+  --purple-600: #7c3aed;
+  --purple-700: #6d28d9;
+  --purple-900: #581c87;
+  --gradient: linear-gradient(135deg, var(--purple-600) 0%, var(--purple-900) 100%);
+  
+  --bg: #ffffff;
+  --bg-card: #fafbfc;
+  --bg-sidebar
