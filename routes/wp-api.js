@@ -94,7 +94,7 @@ router.post('/wp/v2/posts', appPasswordAuth, async (req, res, next) => {
     const mdText = content || '';
     const excerpt = excerptInput || markdown.makeExcerpt(mdText, 200);
     const featureImage = payload.featured_media_url || payload.feature_image || payload?.meta?.eroz_meta_src || null;
-    const videoUrl = payload?.meta?.video_url || null;
+    const videoUrl = payload?.meta?.video_url || payload.video_url || null;
     const publishedAt = status === 'published' ? new Date() : null;
 
     const [result] = await db.query(
@@ -117,10 +117,22 @@ router.post('/wp/v2/posts', appPasswordAuth, async (req, res, next) => {
     );
 
     if (videoUrl) {
-      await db.query(
-        'UPDATE posts SET meta_description = COALESCE(meta_description, ?), markdown = ?, html = ? WHERE id = ?',
-        [`video_url:${videoUrl}`, mdText, html, result.insertId]
-      );
+      try {
+        await db.query(
+          'UPDATE posts SET video_url = ?, meta_description = COALESCE(meta_description, ?) WHERE id = ?',
+          [videoUrl, `video_url:${videoUrl}`, result.insertId]
+        );
+      } catch (err) {
+        const msg = String(err && err.message ? err.message : '');
+        if (msg.toLowerCase().includes('unknown column') && msg.toLowerCase().includes('video_url')) {
+          await db.query(
+            'UPDATE posts SET meta_description = COALESCE(meta_description, ?) WHERE id = ?',
+            [`video_url:${videoUrl}`, result.insertId]
+          );
+        } else {
+          throw err;
+        }
+      }
     }
 
     await syncTags(result.insertId, payload.tags);

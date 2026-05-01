@@ -19,31 +19,62 @@
 <% } %>
 <meta name="twitter:card" content="summary_large_image">
 </head>
-<body>
+<body data-theme="<%= theme %>">
 
-<header class="site-header">
-  <div class="site-header-inner">
-    <a href="/" class="site-title"><%= site.site_title %></a>
-
-    <form class="search-form" action="/" method="get">
-      <input type="search" name="q" placeholder="Search..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
-    </form>
-
-    <nav class="site-nav">
-      <a href="/">Home</a>
-      <a href="/about">About Us</a>
-      <a href="/lainnya">Lainnya</a>
-      <a href="/rss.xml">RSS</a>
-      <% if (currentUser) { %>
-        <a href="/admin" class="admin-link">Admin</a>
-      <% } else { %>
-        <a href="/admin/login" class="admin-link">Login</a>
-      <% } %>
-      <button id="theme-toggle" class="btn-icon" title="Toggle theme" aria-label="Toggle theme">
-        <%= theme === 'dark' ? '☀' : '☾' %>
-      </button>
+<div class="airo-layout">
+  <aside class="sidebar">
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-hexagon">A</div>
+      <div class="logo-text">Airo</div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+      <a href="/" class="nav-item active">
+        <span>🏠</span> Home
+      </a>
+      <a href="#" class="nav-item">
+        <span>📄</span> Classic Post
+      </a>
+      <a href="#" class="nav-item">
+        <span>📐</span> Fullwidth Post
+      </a>
+      <a href="/tag" class="nav-item">
+        <span>🏷️</span> Tag
+      </a>
+      <a href="#" class="nav-item">
+        <span>👤</span> Author
+      </a>
+      <a href="#" class="nav-item">
+        <span>⭐</span> Features
+      </a>
+      <a href="#" class="nav-item">
+        <span>📡</span> Subscribe
+      </a>
     </nav>
-  </div>
-</header>
-
-<main>
+    
+    <!-- Theme toggle -->
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+      <%= theme === 'dark' ? '☀️' : '🌙' %>
+    </button>
+    
+    <!-- Search -->
+    <form class="sidebar-search" action="/" method="get">
+      <input type="search" name="q" placeholder="Enter your search..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+    </form>
+    
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div>Airo © 2024</div>
+      <div>Published with Ghost</div>
+    </div>
+    
+    <% if (currentUser) { %>
+      <a href="/admin" class="admin-link sidebar-admin">Admin</a>
+    <% } else { %>
+      <a href="/admin/login" class="admin-link sidebar-admin">Login</a>
+    <% } %>
+  </aside>
+  
+  <main class="main-content">

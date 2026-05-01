@@ -20,10 +20,8 @@
 
 <% if (searchQuery) { %>
   <h2 class="section-title">Hasil pencarian untuk "<%= searchQuery %>"</h2>
-<% } else if (!featured) { %>
-  <h2 class="section-title">Latest posts</h2>
 <% } else { %>
-  <h2 class="section-title">More posts</h2>
+  <h2 class="section-title">Recent Articles</h2>
 <% } %>
 
 <% if (posts.length === 0) { %>
@@ -35,18 +33,24 @@
     <% } %>
   </div>
 <% } else { %>
-  <div class="post-grid post-grid-4">
+  <div class="post-grid airo-post-grid">
     <% posts.forEach(p => { %>
-      <article class="post-card elevated">
+      <article class="post-card airo-card elevated">
         <a href="/post/<%= p.slug %>" class="thumb">
           <img src="<%= p.feature_image %>" alt="<%= p.title %>" loading="lazy">
+          <span class="card-tag">• <%= (p.tags && p.tags.length) ? p.tags[0].name.toUpperCase() : 'NEWS' %></span>
         </a>
-        <h3><a href="/post/<%= p.slug %>"><%= p.title %></a></h3>
-        <p class="excerpt"><%= p.excerpt %></p>
-        <div class="post-meta">
-          <span><%= p.formattedDate %></span>
-          <span>·</span>
-          <span><%= p.readTime %> min</span>
+        <div class="airo-card-body">
+          <div class="card-date">📅 <%= p.formattedDate %></div>
+          <h3><a href="/post/<%= p.slug %>"><%= p.title %></a></h3>
+          <div class="card-bottom">
+            <div class="card-author">
+              <div class="author-avatar"><%= (site.site_title || 'G').charAt(0).toUpperCase() %></div>
+              <span><%= site.site_title %></span>
+            </div>
+            <div class="card-reads">💬 <%= p.readTime %></div>
+          </div>
+          <a href="/post/<%= p.slug %>" class="read-more-btn">READ MORE</a>
         </div>
       </article>
     <% }) %>

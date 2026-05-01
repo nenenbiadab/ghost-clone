@@ -38,6 +38,7 @@ async function initDatabase() {
       html LONGTEXT,
       excerpt TEXT,
       feature_image VARCHAR(500),
+      video_url TEXT,
       status ENUM('published','draft','scheduled') DEFAULT 'draft',
       visibility ENUM('public','private') DEFAULT 'public',
       featured TINYINT(1) DEFAULT 0,
@@ -90,6 +91,12 @@ async function initDatabase() {
 
   for (const sql of statements) {
     await pool.query(sql);
+  }
+
+  // Lightweight migration: ensure posts.video_url exists on older deployments
+  const [videoCol] = await pool.query("SHOW COLUMNS FROM posts LIKE 'video_url'");
+  if (!videoCol.length) {
+    await pool.query('ALTER TABLE posts ADD COLUMN video_url TEXT NULL AFTER feature_image');
   }
 
   // Default settings — insert kalau belum ada

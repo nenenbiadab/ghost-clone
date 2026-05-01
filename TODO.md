@@ -1,12 +1,15 @@
-# TODO - Paket B (WP API + App Password + AI Translate + Video Player)
+# Airo Theme Layout Update
 
-- [x] Add DB table: application_passwords
-- [x] Add AI title translate helper (OpenAI -> Gemini -> Grok fallback)
-- [x] Add Basic Auth middleware for application password
-- [x] Add WP-compatible API route: POST /api/wp/v2/posts
-- [x] Mount wp-api route in server.js
-- [x] Add admin routes for app password management
-- [x] Add admin page: app-passwords.ejs
-- [x] Add nav link to App Passwords in admin nav
-- [x] Add MP4/HLS player support in single post view
-- [ ] Thorough testing (UI + API + edge cases) and fix findings
+## Current Progress
+- [x] Analyzed current layout (home.ejs, _header.ejs, ghost.css)
+- [x] Created detailed plan 
+- [x] User approved plan ✅
+
+## Steps to Complete
+- [x] 1. Update `views/public/_header.ejs` → Sidebar layout (logo, vertical nav, search)
+- [x] 2. Update `views/public/home.ejs` → Airo grid + "Recent Articles" + new card HTML
+- [x] 3. Update `public/css/ghost.css` → Airo colors, sidebar, card designs, cyan buttons
+- [ ] 4. Test frontend in browser (localhost:3000 despite DB issue)
+- [ ] 5. Polish responsive/mobile + finalize
+
+**Notes:** DB remote (hosting), frontend static assets work fine.
