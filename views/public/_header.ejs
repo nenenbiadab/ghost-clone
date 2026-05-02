@@ -31,27 +31,30 @@
     
     <!-- Navigation -->
     <nav class="sidebar-nav">
-      <a href="/" class="nav-item active">
+      <a href="/" class="nav-item">
         <span>🏠</span> Home
       </a>
-      <a href="#" class="nav-item">
-        <span>📄</span> Classic Post
-      </a>
-      <a href="#" class="nav-item">
-        <span>📐</span> Fullwidth Post
-      </a>
-      <a href="/tag" class="nav-item">
+      <a href="/tag/teknologi" class="nav-item">
         <span>🏷️</span> Tag
       </a>
-      <a href="#" class="nav-item">
-        <span>👤</span> Author
+      <a href="/about" class="nav-item">
+        <span>👤</span> About
       </a>
-      <a href="#" class="nav-item">
-        <span>⭐</span> Features
+      <a href="/lainnya" class="nav-item">
+        <span>📚</span> Lainnya
       </a>
-      <a href="#" class="nav-item">
-        <span>📡</span> Subscribe
+      <a href="/rss.xml" class="nav-item">
+        <span>📡</span> RSS
       </a>
+      <% if (currentUser) { %>
+        <a href="/admin" class="nav-item">
+          <span>⚙️</span> Dashboard
+        </a>
+      <% } else { %>
+        <a href="/admin/login" class="nav-item">
+          <span>🔐</span> Login
+        </a>
+      <% } %>
     </nav>
     
     <!-- Theme toggle -->
